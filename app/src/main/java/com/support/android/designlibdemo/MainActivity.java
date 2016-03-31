@@ -17,6 +17,7 @@
 package com.support.android.designlibdemo;
 
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
@@ -43,132 +44,142 @@ import java.util.List;
  */
 public class MainActivity extends BaseActivity {
 
-    private DrawerLayout mDrawerLayout;
+	private DrawerLayout mDrawerLayout;
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+	@Override
+	protected void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		setContentView(R.layout.activity_main);
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
+		Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+		setSupportActionBar(toolbar);
 
-        final ActionBar ab = getSupportActionBar();
-        ab.setHomeAsUpIndicator(R.drawable.ic_menu);
-        ab.setDisplayHomeAsUpEnabled(true);
+		final ActionBar ab = getSupportActionBar();
+		ab.setHomeAsUpIndicator(R.drawable.ic_menu);
+		ab.setDisplayHomeAsUpEnabled(true);
 
-        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+		mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
 
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
-        if (navigationView != null) {
-            setupDrawerContent(navigationView);
-        }
+		NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+		if (navigationView != null) {
+			setupDrawerContent(navigationView);
+		}
 
-        ViewPager viewPager = (ViewPager) findViewById(R.id.viewpager);
-        if (viewPager != null) {
-            setupViewPager(viewPager);
-        }
+		ViewPager viewPager = (ViewPager) findViewById(R.id.viewpager);
+		if (viewPager != null) {
+			setupViewPager(viewPager);
+		}
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Here's a Snackbar", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
+		FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+		fab.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View view) {
+				Snackbar.make(view, "Here's a Snackbar", Snackbar.LENGTH_LONG)
+						.setAction("Action", null).show();
+			}
+		});
 
-        TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
-        tabLayout.setupWithViewPager(viewPager);
-    }
+		TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
+		tabLayout.setupWithViewPager(viewPager);
+	}
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.sample_actions, menu);
-        return true;
-    }
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		getMenuInflater().inflate(R.menu.sample_actions, menu);
+		return true;
+	}
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                mDrawerLayout.openDrawer(GravityCompat.START);
-                return true;
-        }
-        return super.onOptionsItemSelected(item);
-    }
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		switch (item.getItemId()) {
+			case android.R.id.home:
+				mDrawerLayout.openDrawer(GravityCompat.START);
+				return true;
+		}
+		return super.onOptionsItemSelected(item);
+	}
 
-    private void setupViewPager(ViewPager viewPager) {
-        Adapter adapter = new Adapter(getSupportFragmentManager());
+	private void gotoComponentsActivity() {
+		Intent intent = new Intent(this, ComponentsActivity.class);
+		startActivity(intent);
+	}
 
-        adapter.addFragment(createFragment(Constants.TAB_TYPES.TECHNOLOGIES), Constants.TAB_TYPES.TECHNOLOGIES);
-        adapter.addFragment(createFragment(Constants.TAB_TYPES.PROJECTS), Constants.TAB_TYPES.PROJECTS);
-        adapter.addFragment(createFragment(Constants.TAB_TYPES.CLIENTS), Constants.TAB_TYPES.CLIENTS);
-        viewPager.setAdapter(adapter);
-    }
+	private void setupViewPager(ViewPager viewPager) {
+		Adapter adapter = new Adapter(getSupportFragmentManager());
 
-    private ContentListFragment createFragment(String tabType){
-        Bundle bundle=new Bundle();
-        bundle.putString(ContentListFragment.TAB_TYPE_KEY, tabType);
-        return ContentListFragment.newInstance(bundle);
-    }
+		adapter.addFragment(createFragment(Constants.TAB_TYPES.TECHNOLOGIES), Constants.TAB_TYPES.TECHNOLOGIES);
+		adapter.addFragment(createFragment(Constants.TAB_TYPES.PROJECTS), Constants.TAB_TYPES.PROJECTS);
+		adapter.addFragment(createFragment(Constants.TAB_TYPES.CLIENTS), Constants.TAB_TYPES.CLIENTS);
+		viewPager.setAdapter(adapter);
+	}
 
-    private void setupDrawerContent(NavigationView navigationView) {
-        navigationView.setNavigationItemSelectedListener(
-                new NavigationView.OnNavigationItemSelectedListener() {
-            @Override
-            public boolean onNavigationItemSelected(MenuItem menuItem) {
-                menuItem.setChecked(true);
-                mDrawerLayout.closeDrawers();
-                return true;
-            }
-        });
-    }
+	private ContentListFragment createFragment(String tabType) {
+		Bundle bundle = new Bundle();
+		bundle.putString(ContentListFragment.TAB_TYPE_KEY, tabType);
+		return ContentListFragment.newInstance(bundle);
+	}
 
-    static class Adapter extends FragmentPagerAdapter {
-        private final List<Fragment> mFragments = new ArrayList<>();
-        private final List<String> mFragmentTitles = new ArrayList<>();
+	private void setupDrawerContent(NavigationView navigationView) {
+		navigationView.setNavigationItemSelectedListener(
+				new NavigationView.OnNavigationItemSelectedListener() {
+					@Override
+					public boolean onNavigationItemSelected(MenuItem menuItem) {
+						switch (menuItem.getItemId()) {
+							case R.id.nav_messages:
+								gotoComponentsActivity();
+								return true;
+						}
+						menuItem.setChecked(true);
+						mDrawerLayout.closeDrawers();
+						return true;
+					}
+				});
+	}
 
-        public Adapter(FragmentManager fm) {
-            super(fm);
-        }
+	static class Adapter extends FragmentPagerAdapter {
+		private final List<Fragment> mFragments = new ArrayList<>();
+		private final List<String> mFragmentTitles = new ArrayList<>();
 
-        public void addFragment(Fragment fragment, String title) {
-            mFragments.add(fragment);
-            mFragmentTitles.add(title);
-        }
+		public Adapter(FragmentManager fm) {
+			super(fm);
+		}
 
-        @Override
-        public Fragment getItem(int position) {
-            return mFragments.get(position);
-        }
+		public void addFragment(Fragment fragment, String title) {
+			mFragments.add(fragment);
+			mFragmentTitles.add(title);
+		}
 
-        @Override
-        public int getCount() {
-            return mFragments.size();
-        }
+		@Override
+		public Fragment getItem(int position) {
+			return mFragments.get(position);
+		}
 
-        @Override
-        public CharSequence getPageTitle(int position) {
-            return mFragmentTitles.get(position);
-        }
-    }
+		@Override
+		public int getCount() {
+			return mFragments.size();
+		}
 
-    @Override public void onBackPressed() {
-//        super.onBackPressed();
-        showExitDialog();
-    }
+		@Override
+		public CharSequence getPageTitle(int position) {
+			return mFragmentTitles.get(position);
+		}
+	}
 
-    private void showExitDialog(){
-       new AlertDialog.Builder(this).setTitle("Suyati").setMessage("Do you want to exit?").setIcon(R.drawable.logo).setNegativeButton(
-                "Cancel", new DialogInterface.OnClickListener() {
-                    @Override public void onClick(DialogInterface dialog, int which) {
+	@Override public void onBackPressed() {
+		//        super.onBackPressed();
+		showExitDialog();
+	}
 
-                    }
-                }).setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-            @Override public void onClick(DialogInterface dialog, int which) {
-                System.exit(0);
-            }
-        }).setCancelable(true).show();
-    }
+	private void showExitDialog() {
+		new AlertDialog.Builder(this).setTitle("Suyati").setMessage("Do you want to exit?").setIcon(R.drawable.logo).setNegativeButton(
+				"Cancel", new DialogInterface.OnClickListener() {
+					@Override public void onClick(DialogInterface dialog, int which) {
+
+					}
+				}).setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+			@Override public void onClick(DialogInterface dialog, int which) {
+				System.exit(0);
+			}
+		}).setCancelable(true).show();
+	}
 }
